@@ -1,14 +1,20 @@
-let balls = []; 
+
+
+let balls = []; //Store the balls 
 let loopCount =0;
-let range = 50;
-let lx,ly;
+let range = 50;//Scale 
+let lx,ly; // Mouse 
 let is;
+
+//gradient color
 let startColor;
 let endColor;
 let state = 1; //1=>red -1=> blue//
 let currentStartColor, currentEndColor;
 let targetStartColor, targetEndColor;
-let lerpAmt = 0; // 插值量，用于控制颜色过渡的速度
+let lerpAmt = 0; 
+
+//Balls set 
 let numofball = 0;
 let setofballs_x =[];
 let setofballs_y =[];
@@ -44,6 +50,8 @@ function mousePressed() {
 
 function keyPressed() {
   ///////////////gradient when press 'j'///////////////////////////
+
+//Turning color 
   if (key == 'j' || key == 'J') {
     if (state == 1) {
       state = -1;
@@ -132,6 +140,8 @@ function drawP(cx,cy)
   
 }
 
+
+//Draw the central circle
 function setGradient(x, y, w, startColor, endColor) {//create color-graded ball///
   noFill();
   for (let i = 0; i < w; i++) {
