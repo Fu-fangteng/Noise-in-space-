@@ -1,153 +1,166 @@
-
-
-let balls = []; //Store the balls 
-let loopCount =0;
-let range = 50;//Scale 
-let lx,ly; // Mouse 
+let balls = [];
+let buttons = [];
+let loopCount = 0;
+let range = 50;
+let lx, ly;
 let is;
-
-//gradient color
 let startColor;
 let endColor;
-let state = 1; //1=>red -1=> blue//
-let currentStartColor, currentEndColor;
-let targetStartColor, targetEndColor;
-let lerpAmt = 0; 
-
-//Balls set 
 let numofball = 0;
-let setofballs_x =[];
-let setofballs_y =[];
+let setofballs_x = [];
+let setofballs_y = [];
 
+let noiseOrNot;
 
 function setup() {
   createCanvas(400, 400);
   angleMode(DEGREES);
-  currentStartColor = color(248, 54, 0);
-  currentEndColor = color(249, 212, 35);
-  targetStartColor = currentStartColor;
-  targetEndColor = currentEndColor;
 }
 
 function draw() {
   background(220);
-    for (let ball of balls) {
+  for (let ball of balls) {
     ball.display();
   }
+  for (let button of buttons) {
+    let index = buttons.indexOf(button);
+    button.mousePressed(() => buttonClicked(index));
+  }
+}
+
+function buttonClicked(index) {
+  console.log(index + " Button clicked!");
+  balls[index].change();
 }
 
 function mousePressed() {
-  if(mouseX <=400&&mouseX >= 0&&mouseY <=400&&mouseY >= 0){
-  lx = mouseX;
-  ly = mouseY;
-  drawP(lx,ly);
-  setofballs_x[numofball] = lx;
-  setofballs_y[numofball] = ly;
-  createButton(numofball, lx, ly);
-  numofball += 1;
-  }
-}
+  if (mouseX <= width && mouseX >= 0 && mouseY <= height && mouseY >= 0) {
+    lx = mouseX;
+    ly = mouseY;
+    setofballs_x[numofball] = lx;
+    setofballs_y[numofball] = ly;
+    let newBall = new Ball(mouseX, mouseY, 1);
+    balls.push(newBall);
+    buttons[numofball] = createButton(numofball);
 
-function keyPressed() {
-  ///////////////gradient when press 'j'///////////////////////////
-
-//Turning color 
-  if (key == 'j' || key == 'J') {
-    if (state == 1) {
-      state = -1;
-      targetStartColor = color(30, 144, 255);
-      targetEndColor = color(240, 248, 255);
-    } else {
-      state = 1;
-      targetStartColor = color(248, 54, 0);
-      targetEndColor = color(249, 212, 35);
-    }
-    lerpAmt = 0; // 重置插值量
-  }
-}
-
-function mouseClicked() {
-  ////////////create ball when click mouse///////////////////
-  if(mouseX <=400&&mouseX >= 0&&mouseY <=400&&mouseY >= 0){
-  let newBall = new Ball(mouseX, mouseY);
-  balls.push(newBall);
+    numofball += 1;
   }
 }
 
 class Ball {
-  constructor(x, y) {
+  constructor(x, y, state) {
     this.x = x;
     this.y = y;
+    this.state = 1;
     this.diameter = 20;
+
+    this.startColor = color(248, 54, 0);
+    this.endColor = color(249, 212, 35);
+    this.currentStartColor = this.startColor;
+    this.currentEndColor = this.endColor;
+    this.targetStartColor = this.currentStartColor;
+    this.targetEndColor = this.currentEndColor;
+    this.lerpAmt = 0;
   }
-  
+  change() {
+    if (this.state == 1) {
+      this.state = -1;
+      this.targetStartColor = color(30, 144, 255);
+      this.targetEndColor = color(240, 248, 255);
+    } else {
+      this.state = 1;
+      this.targetStartColor = color(248, 54, 0);
+      this.targetEndColor = color(249, 212, 35);
+    }
+    this.lerpAmt = 0; // 重置插值量
+  }
+
   display() {
-      drawP(this.x,this.y);
+    ///////////////////gradient when Change color/////////////////////////
+    if (this.lerpAmt < 1) {
+      this.lerpAmt += 0.04; // 调整这个值以改变过渡速度
+    }
+    // 使用lerpColor进行颜色插值
+    this.startColor = lerpColor(
+      this.currentStartColor,
+      this.targetStartColor,
+      this.lerpAmt
+    );
+    this.endColor = lerpColor(
+      this.currentEndColor,
+      this.targetEndColor,
+      this.lerpAmt
+    );
+
+    // 当插值完成时，更新当前颜色
+    if (this.lerpAmt >= 1) {
+      this.currentStartColor = this.targetStartColor;
+      this.currentEndColor = this.targetEndColor;
+    }
+    drawP(this.x, this.y, this.startColor, this.endColor);
   }
 }
 
-function drawP(cx,cy)
-{
-  ///////////////////gradient when Change color/////////////////////////
-  if (lerpAmt < 1) {
-    lerpAmt += 0.005; // 调整这个值以改变过渡速度
-  }
-  // 使用lerpColor进行颜色插值
-  startColor = lerpColor(currentStartColor, targetStartColor, lerpAmt);
-  endColor = lerpColor(currentEndColor, targetEndColor, lerpAmt);
-
-  // 当插值完成时，更新当前颜色
-  if (lerpAmt >= 1) {
-    currentStartColor = targetStartColor;
-    currentEndColor = targetEndColor;
-  }
+function drawP(cx, cy, startColor, endColor) {
   //////////////create circle part//////////////////////////////////////
   push();
-  translate(cx,cy);
-  //fill(255,0,0);
-    noStroke();
-  //circle(0,0,range);
-  let detaX ;
-  let detaR = range/10;
-  let vagueX=range/50*3;
-   loopCount = 0;
-  for (let i=0;i<360;i+=1)
-    {
-      push();
-      // fill(255,0,0);
-      rotate(i);
-      vagueX = map(noise(i,frameCount/100+1000),0,1,range/50*15,4*range/5);
-      detaX = map(noise(i,loopCount,frameCount/500),0,1,0,8*range/5)
-      detaR = map(detaX,0,8*range/5,range/10,range/50);
-      
-      let interV = map(detaX,range/50*15+10,4*range/5+10,0.6,1);
-      let c = lerpColor(startColor, endColor, interV);
-   
-      fill(c);
-      circle(detaX,0,detaR);
-      
-                  
-      let interD = map(vagueX,range-10,range+10,0.7,interV);
-      let d = lerpColor(startColor, endColor, interD);
-      fill(d);
-      circle(vagueX,0,3*range/50);
-      
-      pop();
-      loopCount++;
-    }
+  translate(cx, cy);
+  noStroke();
+  let detaX;
+  let detaR = range / 10;
+  let vagueX = (range / 50) * 3;
+  loopCount = 0;
+  for (let i = 0; i < 360; i += 1) {
+    push();
+    rotate(i);
+    vagueX = map(
+      noise(i, frameCount / 100 + 1000),
+      0,
+      1,
+      (range / 50) * 15,
+      (4 * range) / 5
+    );
+    detaX = map(
+      noise(i, loopCount, frameCount / 500),
+      0,
+      1,
+      0,
+      (8 * range) / 5
+    );
+    detaR = map(detaX, 0, (8 * range) / 5, range / 10, range / 50);
+
+    let interV = map(
+      detaX,
+      (range / 50) * 15 + 10,
+      (4 * range) / 5 + 10,
+      0.6,
+      1
+    );
+
+    let c = lerpColor(startColor, endColor, interV);
+
+    fill(c);
+    circle(detaX, 0, detaR);
+
+    let interD = map(vagueX, range - 10, range + 10, 0.7, interV);
+    let d = lerpColor(startColor, endColor, interD);
+    fill(d);
+    circle(vagueX, 0, (3 * range) / 50);
+
+    pop();
+    loopCount++;
+  }
   setGradient(0, 0, range, startColor, endColor);
   pop();
-  
 }
 
-
-//Draw the central circle
-function setGradient(x, y, w, startColor, endColor) {//create color-graded ball///
+function setGradient(x, y, w, startColor, endColor) {
+  //create color-graded ball///
   noFill();
   for (let i = 0; i < w; i++) {
     let inter = map(i, 0, w, 0, 0.6);
     let c = lerpColor(startColor, endColor, inter);
     stroke(c);
-    circle(0,0,i);
+    circle(0, 0, i);
   }
 }
