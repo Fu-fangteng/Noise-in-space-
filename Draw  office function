@@ -1,0 +1,54 @@
+function setup() {
+  createCanvas(400, 400);
+}
+
+function draw() {
+  background(220);
+  strokeWeight(3);
+  
+  for(let i =0; i <2; i ++)
+    {
+      for (let j =0; j <2; j++)
+        {
+           drawOffice(200*i+100, 200*j+50, 0.7);
+        } 
+    }
+   
+}
+
+function drawOffice(x, y, scaleFactor) {
+  push(); // 保存当前画布状态
+  translate(x, y); // 将坐标系移动到指定中心位置
+  
+  // 根据缩放比例进行缩放
+  scale(scaleFactor);
+  
+  // 画桌子
+  fill(255);
+  rect(-100, -40, 200, 100); // 桌面
+  
+  // 画椅子
+  fill(0);
+  rect(-10, 70, 20, 10);
+  fill(255);
+  rect(-40, 80, 80, 50); // 座位
+  rect(-50, 90, 10, 40); // 左扶手
+  rect(40, 90, 10, 40); // 右扶手
+  quad(-40, 130, 40, 130, 30, 140, -30, 140); // 背靠
+  
+  fill(0);
+  circle(30, 140, 3);
+  circle(-30, 140, 3);
+  
+  // 画电脑
+  fill(200);
+  rect(-30, -10, 60, 40); // 主体
+  fill(0);
+  rect(-20, 0, 40, 20); // 屏幕
+  fill(100);
+  ellipse(0, 20, 5, 5); // 摄像头
+  fill(150);
+  rect(-25, 25, 50, 5); // 键盘
+  
+  pop(); // 恢复之前保存的画布状态
+}
