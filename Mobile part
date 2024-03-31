@@ -10,13 +10,21 @@ function setup() {
   // 获取用户麦克风权限
   mic = new p5.AudioIn();
   mic.start(startMic);
+
   button1 = createButton('1');
-  button1.position(windowWidth/2-20, windowHeight/2);
+    button1.size(windowWidth/3,windowHeight/3);
+  button1.position(0, windowHeight/2);
   button1.mousePressed(() => data(1));
   
   button2 = createButton('2');
-  button2.position(windowWidth/2+20, windowHeight/2);
+    button2.size(windowWidth/3,windowHeight/3);
+  button2.position(windowWidth/3, windowHeight/2);
   button2.mousePressed(() => data(2));
+  
+  button3 = createButton('3');
+  button3.size(windowWidth/3,windowHeight/3);
+  button3.position(windowWidth/3*2, windowHeight/2);
+  button3.mousePressed(() => data(3));
 }
 
 function startMic() {
@@ -25,7 +33,10 @@ function startMic() {
 
 function draw() {
   background(220);
-  
+  fill(0,0,0)
+  stroke(29)
+  textSize(60) 
+  text1 =text("Select Your Hero",width/2,height/4);
   // 获取当前麦克风声音强度
   let vol = mic.getLevel();
   soundLevel = map(vol, 0, 1, 0, height);
@@ -40,24 +51,11 @@ function draw() {
   text(`Sound Level: ${soundLevel.toFixed(2)}`, width / 2, height - soundLevel - 10);
 }
 
-function deviceN()
-{
-  button1 = createButton('1');
-  button1.position(windowWidth/2-buttonWidth/2, windowHeight/2);
-  button1.mousePressed(data(1));
-  
-  button2 = createButton('2');
-  button2.position(windowWidth/2+buttonWidth/2, windowHeight/2);
-  button2.mousePressed(data(2));
-  
-  button3 = createButton('3');
-  button3.position(windowWidth/2, windowHeight/2);
-  button3.mousePressed(data(3));
-}
-
 function data(devicen)
 {
   console.log(devicen);
   button1.remove(); 
   button2.remove();
+  button3.remove();
+  //text1.remove();
 }
