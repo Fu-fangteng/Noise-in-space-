@@ -7,12 +7,12 @@ var status = "unknown"; // or 'approve' or 'reject', depending on whether the se
 
 
 
-
+let fullornot =false;
 let device_index;
 let mic;
 let deviceNumber;
 let soundLevel = 0;
-let button1,button2,button3,button4;
+let button1,button2,button3,button4,button11,button22,button33,button44;
 let standard_noise = 80;
 let dif_noise;
 let numofseat = 4;
@@ -26,20 +26,38 @@ let balls = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  
-  mic = new p5.AudioIn();
+ 
+    mic = new p5.AudioIn();
   mic.start();
 
   drawButtons();
 
-  // let newBall = new Ball(windowWidth/4-windowWidth/16, windowHeight/4,1);
-  // balls.push(newBall);
-  // newBall = new Ball(windowWidth/2+windowWidth/4-windowWidth/16, windowHeight/4,1);
-  // balls.push(newBall);
-  // newBall = new Ball(windowWidth/4-windowWidth/16, windowHeight/2+windowHeight/4,1);
-  // balls.push(newBall);
-  // newBall = new Ball(windowWidth/2+windowWidth/4-windowWidth/16, windowHeight/2+windowHeight/4,1);
-  // balls.push(newBall);
+  let newBall = new Ball(windowWidth/4-windowWidth/16, windowHeight/4);
+  button11 = createButton('11');
+  button11.size(windowWidth/8,windowWidth/8);
+  button11.position(windowWidth/4-windowWidth/16+50, windowHeight/4);
+  balls.push(newBall);
+  button11.mousePressed(() => balls[0].change());
+  
+  let newBall1 = new Ball(windowWidth/2+windowWidth/4-windowWidth/16, windowHeight/4);
+  button22 = createButton('22');
+  button22.size(windowWidth/8,windowWidth/8);
+  button22.position(windowWidth/2+windowWidth/4-windowWidth/16+50, windowHeight/4);
+  balls.push(newBall1);
+  button22.mousePressed(() => balls[1].change());
+  let newBall2 = new Ball(windowWidth/4-windowWidth/16, windowHeight/2+windowHeight/4);
+  button33 = createButton('33');
+  button33.size(windowWidth/8,windowWidth/8);
+  button33.position(windowWidth/4-windowWidth/16+50, windowHeight/2+windowHeight/4);
+  balls.push(newBall2);
+  button33.mousePressed(() => balls[2].change());
+  let newBall3 = new Ball(windowWidth/2+windowWidth/4-windowWidth/16, windowHeight/2+windowHeight/4);
+  button44 = createButton('44');
+  button44.size(windowWidth/8,windowWidth/8);
+  button44.position(windowWidth/2+windowWidth/4-windowWidth/16+50, windowHeight/2+windowHeight/4);
+  balls.push(newBall3);
+  button44.mousePressed(() => balls[3].change());
+  
   
 }//windowWidth/2+windowWidth/4, windowHeight/2+windowHeight/4
 
@@ -48,7 +66,8 @@ function startMic() {
 }
 
 function draw() {
-  background(140);
+  
+     background(140);
   if (status == "reject"){
     showMyErrorScreen("Sorry, room is full!\nPlease come back later...");
     return;
@@ -92,19 +111,21 @@ function draw() {
   text(otherData2.sound,400,100);
   text(otherData2.device,300,100);
   text("otherData2device",150,100);
-  text(otherData3.sound,400,150);
-  text(otherData3.device,300,150);
-  text("otherData3.device",150,150);
-  //balls[serverData[1].device].display();
+   
+  balls[clientData.device-1].display();
+  balls[otherData1.device-1].display();
+  balls[otherData2.device-1].display();
 
   //let otheDataNoise = serverData[Object.keys(serverData)[0]];
   // 4. Draw the players' fingertips.
   
+  text("gui!!!",windowWidth/2,windowHeight/2);
+  fill(25,16,51);
+  circle(windowWidth/2,windowHeight/2,60);
   
+  }
+ 
 
-  
-  
-}
 
 function data(devicen)
 {
@@ -183,8 +204,8 @@ class Ball {
     this.state = 1;
     this.diameter = 20;
 
-    this.startColor = color(248, 54, 0);
-    this.endColor = color(249, 212, 35);
+    this.startColor =  color(30, 144, 255);
+    this.endColor = color(240, 248, 255);
     this.currentStartColor = this.startColor;
     this.currentEndColor = this.endColor;
     this.targetStartColor = this.currentStartColor;
@@ -205,15 +226,16 @@ class Ball {
         // //  }
 
     if (this.state == 1) {
-      text('Hello',windowWidth/2,windowHeight/4);
+      
       this.state = -1;
-      this.targetStartColor = color(30, 144, 255);
-      this.targetEndColor = color(240, 248, 255);
+      this.targetStartColor = color(248, 54, 0);
+      this.targetEndColor = color(249, 212, 35);
+      text('Hello',windowWidth/2,windowHeight/4);
      
     } else {text(this.state,windowWidth/2,windowHeight/4);
       this.state = 1;
-      this.targetStartColor = color(248, 54, 0);
-      this.targetEndColor = color(249, 212, 35);
+      this.targetStartColor = color(30, 144, 255);
+      this.targetEndColor = color(240, 248, 255);
             
     }
     this.lerpAmt = 0; // 重置插值量
@@ -221,9 +243,10 @@ class Ball {
   }
 
   display() {
+
     ///////////////////gradient when Change color/////////////////////////
     if (this.lerpAmt < 1) {
-      this.lerpAmt += 0.04; // 调整这个值以改变过渡速度
+      this.lerpAmt += 0.1; // 调整这个值以改变过渡速度
     }
     // 使用lerpColor进行颜色插值
     this.startColor = lerpColor(
@@ -294,7 +317,7 @@ function drawP(cx, cy, startColor, endColor) {
     circle(vagueX, 0, (3 * range) / 50);
 
     pop();
-   // loopCount++;
+    loopCount++;
   }
   setGradient(0, 0, range, startColor, endColor);
   pop();
@@ -396,6 +419,7 @@ function touchStarted(){
     */
     fullscreen(true); 
   }
+  fullornot=true;
   return false;
 }
 function touchMoved(){
